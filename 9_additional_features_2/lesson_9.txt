@@ -13,5 +13,5 @@ t2.Region IS NOT NULL)
 
 9.4.3
 SELECT * FROM Orders t1
-WHERE t1.Freight > ANY
+WHERE t1.Freight > ALL
 (SELECT UnitPrice FROM Products)
