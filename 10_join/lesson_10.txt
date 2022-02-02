@@ -1,0 +1,17 @@
+10.4.1
+SELECT Products.ProductName, [Order Details].UnitPrice
+FROM Products
+JOIN [Order Details]
+ON Products.ProductID = [Order Details].ProductID AND
+[Order Details].UnitPrice < 20
+
+10.4.2 Выдача получилась объемнее, так как операция FULL JOIN подразумевает под собой возврат всех записей, входящих в таблицу.
+Значения NULL встречаются потому, что в таблице 'Orders' отсутствуют заказы у некоторых поставщиков, инфоормация о которых есть в таблице 'Customers'.
+В этом случае, при использовании операции FULL JOIN, по сути операции объединения, в тех полях, которые не соответствуют запросу, указывается значение NULL.
+
+10.4.3 В предложение WHERE необходимо добавить условие соответстия между полями соединяемых таблиц.
+
+10.4.4
+SELECT Products.ProductName, [Order Details].UnitPrice
+FROM Products JOIN [Order Details]
+ON Products.ProductID = [Order Details].ProductID

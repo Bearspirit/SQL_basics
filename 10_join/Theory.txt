@@ -1,0 +1,103 @@
+10. JOIN
+Мы уже рассмотрели несколько вариантов соединения таблиц, либо по умолчанию, либо с помощью эквисоединений.
+
+В SQL имеется специальный оператор JOIN (в нескольких модификациях), который явно задаёт фактически все ключевые виды соединений двух таблиц на основе теории множеств в рамках школьного курса.
+
+Базовый синтаксис JOIN:
+
+FROM Table1 JOIN Table2 ON условие
+Оператор JOIN может уточняться дополнительными модификаторами-префиксами. Вместо ON также может использовать USING.
+
+10.1. INNER JOIN
+
+Эта операции -- по сути, пересечение двух множеств. Мы указываем условие связи, например, по FK, и получаем только те записи из обеих таблиц, которые отвечают этому требованию.
+
+Простой пример -- свяжем через JOIN таблицу товаров (Products) и категорий товаров (Categories), чтобы показать название товара и его категорию:
+
+SELECT Products.ProductName, Categories.CategoryName
+FROM Products
+INNER JOIN Categories
+ON Products.CategoryID = Categories.CategoryID;
+INNER JOIN -- это JOIN в SQL по умолчанию, его можно записывать просто как JOIN (без INNER).
+
+SELECT Products.ProductName, Categories.CategoryName
+FROM Products JOIN Categories
+ON Products.CategoryID = Categories.CategoryID;
+10.2. FULL JOIN
+
+Эта операция противоположна предыдущей -- она возвращает все записи, входящие в обе таблицы. По сути, это операция объединения множеств.
+
+Например,
+
+SELECT Orders.Freight, Customers.CompanyName
+FROM Orders
+FULL JOIN Customers
+ON Orders.CustomerID = Customers.CustomerID
+ORDER BY Freight;
+Мы соединили две таблицы по FK идентификатора пользователя.
+
+В чём различие такой записи от варианта, если бы мы использовали INNER JOIN?
+
+INNER JOIN Customers
+Технически, мы получим несколько дополнительных записей, у которых в поле Freight записан NULL. Это записи, которые не подошли под условие отбора, поэтому поля, соответствующие другой таблице, заполняются значением NULL.
+
+10.3. CROSS JOIN
+
+Это декартово произведение двух таблиц (все ко всем), аналогичное обычному соединению:
+
+SELECT Employees.FirstName, Employees.LastName, Orders.Freight
+FROM Employees, Orders;
+Вариант с JOIN:
+
+SELECT Employees.FirstName, Employees.LastName, Orders.Freight
+FROM Employees CROSS JOIN Orders;
+Результаты выдачи будут эквивалентны.
+
+Рекомендуется всегда использовать запись с JOIN, чтобы не возникало неоднозначностей в трактовке работы запроса.
+
+10.4. Задания
+
+10.4.1. Перепишите задание 8.3.2 через синтаксис JOIN.
+8.3.2 Организуйте эквисоединение, которое выводит цену и названия тех товаров, для которых цена за единицу (UnitPrice) в таблице Order Details меньше 20.
+
+10.4.2. Имеется запрос
+SELECT Orders.Freight, Customers.CompanyName
+FROM Orders INNER JOIN Customers
+ON Orders.CustomerID = Customers.CustomerID
+ORDER BY Freight;
+Проверьте этот запрос с вариантом FULL JOIN -- за счёт чего выдача получилась объёмнее? Почему значения NULL встречаются в обоих полях набора?
+
+10.4.3. Подумайте, как с помощью предложения WHERE превратить запрос CROSS JOIN в INNER JOIN.
+
+10.4.4. Перепишите данный запрос в INNER JOIN:
+SELECT Products.ProductName, [Order Details].UnitPrice
+FROM Products CROSS JOIN [Order Details]
+WHERE Products.ProductID = [Order Details].ProductID
+Решение задания 9
+9.4.1. Найдите все пары из разных заказчиков (Customers), для которых не задан регион (поле Region).
+
+SELECT t1.ContactName, t2.ContactName, t1.Region
+FROM Customers t1, Customers t2 
+WHERE (t1.Region IS NULL) AND (t2.Region IS NULL) AND
+      (t1.CustomerID <> t2.CustomerID)
+9.4.2. Найдите вложенным запросом список заказов (Orders), в котором у заказчиков (Customers) регион не пуст (поле Region).
+
+SELECT OrderID
+FROM Orders t1
+WHERE CustomerID = ANY 
+  (SELECT CustomerID FROM Customers
+   WHERE Region IS NOT NULL)
+или
+
+SELECT OrderID
+FROM Orders t1
+WHERE EXISTS 
+  (SELECT * FROM Customers t2 WHERE
+   t1.CustomerID = t2.CustomerID AND
+   t2.Region IS NOT NULL)
+9.4.3. Немного условный, но показательный пример. Найдите все заказы (таблица Orders), цена за доставку товара которых (Freight) превышает цену любого товара (поле UnitPrice, таблица Products).
+
+SELECT OrderID
+FROM Orders
+WHERE Freight > ALL
+  (SELECT UnitPrice FROM Products)
