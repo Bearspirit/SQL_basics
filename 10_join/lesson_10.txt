@@ -10,6 +10,7 @@ ON Products.ProductID = [Order Details].ProductID AND
 В этом случае, при использовании операции FULL JOIN, по сути операции объединения, в тех полях, которые не соответствуют запросу, указывается значение NULL.
 
 10.4.3 В предложение WHERE необходимо добавить условие соответстия между полями соединяемых таблиц.
+WHERE table1.primary_key = table2.foreign_key (эталонное решение)
 
 10.4.4
 SELECT Products.ProductName, [Order Details].UnitPrice
