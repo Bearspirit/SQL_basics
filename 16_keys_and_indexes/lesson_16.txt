@@ -1,0 +1,10 @@
+1. Создание кластерных индексов для полей RegionID и TerritoryID для таблиц Region и Territories:
+CREATE CLUSTERED INDEX PK_Region ON Region (RegionID)
+CREATE CLUSTERED INDEX PK_Trritory ON Territories (TerritoryID)
+
+2. Создаем дополнительные индексы.
+Таблица Region поле RegionDescription:
+CREATE INDEX Region_Description ON Region (RegionDescription)
+
+Таблица Territories поля TerritoryDescription и RegionID:
+CREATE INDEX idxTerritoryDescriptionAndRegionID ON Territories (TerritoryDescription, RegionID)
